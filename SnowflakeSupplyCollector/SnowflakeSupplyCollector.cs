@@ -15,7 +15,7 @@ namespace SnowflakeSupplyCollector {
         public static string BuildConnectionString(string account, string region, string db, string user,
             string password) {
             return
-                $"ACCOUNT={account};HOST={account}.{region}.snowflakecomputing.com;DB={db};USER={user},PASSWORD={password}";
+                $"ACCOUNT={account};HOST={account}.{region}.snowflakecomputing.com;DB={db};USER={user};PASSWORD={password}";
         }
 
 
@@ -28,11 +28,11 @@ namespace SnowflakeSupplyCollector {
 
                 var cmd = conn.CreateCommand();
                 cmd.CommandText =
-                    $"SELECT {dataEntity.Name} from {dataEntity.Collection.Name} sample row ({sampleSize} rows)";
+                    $"SELECT {dataEntity.Name} from {dataEntity.Collection.Schema}.{dataEntity.Collection.Name} sample row ({sampleSize} rows)";
 
                 var reader = cmd.ExecuteReader();
                 while (reader.Read()) {
-                    if (reader.IsDBNull(0))
+                    if (!reader.IsDBNull(0))
                         result.Add(reader.GetValue(0).ToString());
                 }
             }
@@ -56,8 +56,8 @@ namespace SnowflakeSupplyCollector {
                 while (reader.Read()) {
                     var schema = reader.GetString(1);
                     var name = reader.GetString(2);
-                    var rowCount = reader.GetInt64(3);
-                    var bytes = reader.GetInt64(4);
+                    var rowCount = reader.IsDBNull(3) ? 0 : reader.GetInt64(3);
+                    var bytes = reader.IsDBNull(4) ? 0 : reader.GetInt64(4);
 
                     metrics.Add(new DataCollectionMetrics() {
                         Name = name,
@@ -74,75 +74,75 @@ namespace SnowflakeSupplyCollector {
         
         private DataType ConvertDataType(string dbDataType)
         {
-            if ("integer".Equals(dbDataType))
+            if ("INTEGER".Equals(dbDataType))
             {
                 return DataType.Long;
             }
-            else if ("smallint".Equals(dbDataType))
+            else if ("SMALLINT".Equals(dbDataType))
             {
                 return DataType.Short;
             }
-            else if ("boolean".Equals(dbDataType))
+            else if ("BOOLEAN".Equals(dbDataType))
             {
                 return DataType.Boolean;
             }
-            else if ("character".Equals(dbDataType))
+            else if ("CHARACTER".Equals(dbDataType))
             {
                 return DataType.Char;
             }
-            else if ("varchar".Equals(dbDataType))
+            else if ("VARCHAR".Equals(dbDataType))
             {
                 return DataType.String;
             }
-            else if ("text".Equals(dbDataType))
+            else if ("TEXT".Equals(dbDataType))
             {
                 return DataType.String;
             }
-            else if ("string".Equals(dbDataType))
+            else if ("STRING".Equals(dbDataType))
             {
                 return DataType.String;
             }
-            else if ("double precision".Equals(dbDataType))
+            else if ("DOUBLE PRECISION".Equals(dbDataType))
             {
                 return DataType.Double;
             }
-            else if ("number".Equals(dbDataType))
+            else if ("NUMBER".Equals(dbDataType))
             {
                 return DataType.Decimal;
             }
-            else if ("decimal".Equals(dbDataType))
+            else if ("DECIMAL".Equals(dbDataType))
             {
                 return DataType.Decimal;
             }
-            else if ("numeric".Equals(dbDataType))
+            else if ("NUMERIC".Equals(dbDataType))
             {
                 return DataType.Decimal;
             }
-            else if ("date".Equals(dbDataType))
+            else if ("DATE".Equals(dbDataType))
             {
                 return DataType.DateTime;
             }
-            else if ("time".Equals(dbDataType))
+            else if ("TIME".Equals(dbDataType))
             {
                 return DataType.DateTime;
             }
-            else if ("timestamp".Equals(dbDataType))
+            else if ("TIMESTAMP".Equals(dbDataType))
             {
                 return DataType.DateTime;
             }
-            else if ("timestamp_ltz".Equals(dbDataType))
+            else if ("TIMESTAMP_LTZ".Equals(dbDataType))
             {
                 return DataType.DateTime;
             }
-            else if ("timestamp_ntz".Equals(dbDataType))
+            else if ("TIMESTAMP_NTZ".Equals(dbDataType))
             {
                 return DataType.DateTime;
             }
-            else if ("timestamp_tz".Equals(dbDataType))
+            else if ("TIMESTAMP_TZ".Equals(dbDataType))
             {
                 return DataType.DateTime;
             }
-            else if ("datetime".Equals(dbDataType))
+            else if ("DATETIME".Equals(dbDataType))
             {
                 return DataType.DateTime;
             }

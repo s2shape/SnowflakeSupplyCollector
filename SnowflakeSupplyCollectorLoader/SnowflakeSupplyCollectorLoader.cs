@@ -20,8 +20,14 @@ namespace SnowflakeSupplyCollectorLoader
                 conn.ConnectionString = dataEntities[0].Container.ConnectionString;
                 conn.Open();
 
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = $"DROP TABLE IF EXISTS {dataEntities[0].Collection.Name}";
+                    cmd.ExecuteNonQuery();
+                }
+
                 var sb = new StringBuilder();
-                sb.Append("CREATE TABLE test.");
+                sb.Append("CREATE TABLE ");
                 sb.Append(dataEntities[0].Collection.Name);
                 sb.Append(" (\n");
                 sb.Append("id_field integer autoincrement(1,1) primary key");
@@ -59,6 +65,8 @@ namespace SnowflakeSupplyCollectorLoader
 
                 sb.Append(");");
 
+                Console.WriteLine(sb.ToString());
+
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = sb.ToString();
@@ -74,7 +82,7 @@ namespace SnowflakeSupplyCollectorLoader
                         bulkSize = count - rows;
 
                     sb = new StringBuilder();
-                    sb.Append("INSERT INTO test.");
+                    sb.Append("INSERT INTO ");
                     sb.Append(dataEntities[0].Collection.Name);
                     sb.Append("(");
 

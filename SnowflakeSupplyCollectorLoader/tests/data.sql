@@ -15,7 +15,7 @@ create table test.test_data_types (
    decimal_field decimal,
    double_field double,
    date_field date,
-   timestamp_field timestamp
+   timestamp_field timestamp_ltz
 );
 
 insert into test.test_data_types(char_field, varchar_field, string_field, boolean_field, number_field, decimal_field, double_field, date_field, timestamp_field)
@@ -30,8 +30,8 @@ create table test.test_array_types (
    array_field array
 );
 
-insert into test_array_types (variant_field, object_field, array_field)
-values('test', object_construct('field1', 1, 'field2', 'value'), array_construct(1,2,3));
+insert into test.test_array_types (variant_field, object_field, array_field)
+SELECT to_variant('test'), object_construct('field1', 1, 'field2', 'value'), array_construct(1,2,3);
 
 drop table if exists test.test_field_names;
 
@@ -42,8 +42,7 @@ create table test.test_field_names (
    CamelCase integer,
    "Table" integer,
    "array" integer,
-   "SELECT" integer,
-   constraint test_field_names_pk primary key(id)
+   "SELECT" integer
 );
 
 insert into test.test_field_names(low_case, upcase, camelcase, "Table", "array", "SELECT")
@@ -75,7 +74,7 @@ drop table if exists test.test_index_ref;
 
 create table test.test_index_ref (
    id integer autoincrement(1,1) not null primary key,
-   index_id integer REFERENCES test_index(id)
+   index_id integer REFERENCES test.test_index(id)
 );
 
 insert into test.test_index_ref(index_id)
