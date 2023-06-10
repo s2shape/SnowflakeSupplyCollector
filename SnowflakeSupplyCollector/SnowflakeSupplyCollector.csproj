@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="S2.SupplyCollector" Version="1.1.1" />
-    <PackageReference Include="Snowflake.Data" Version="1.1.0" />
+    <PackageReference Include="Snowflake.Data" Version="2.0.18" />
   </ItemGroup>
 
 </Project>
